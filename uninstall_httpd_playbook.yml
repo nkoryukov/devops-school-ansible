@@ -1,0 +1,17 @@
+---
+- name: httpd removal
+  hosts: nodes
+  tasks:
+  - name: uninstall httpd
+    package: 
+      name: httpd
+      state: absent
+  - name: remove index.html
+    file:
+      path: /var/www/html/index.html
+      state: absent
+  - name: close port 80 for http
+    firewalld:
+      service: http
+      permanent: true
+      state: disabled

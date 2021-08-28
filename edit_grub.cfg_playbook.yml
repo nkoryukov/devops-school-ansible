@@ -1,0 +1,21 @@
+---
+- name: edit grub.cfg
+  hosts: nodes
+
+  tasks:
+  - name: set net.ifnames
+    lineinfile:
+      path: /etc/default/grub
+      regexp: '^(GRUB_CMDLINE_LINUX((?!net\.ifnames=[0-1]).)*)\"$'
+      line: '\1 net.ifnames=0"'
+      backrefs: yes
+
+  - name: set biosdevname
+    lineinfile:
+      path: /etc/default/grub
+      regexp: '^(GRUB_CMDLINE_LINUX((?!biosdevname=[0-1]).)*)\"$'
+      line: '\1 biosdevname=0"'
+      backrefs: yes
+
+  - name: save changes to the config
+    command: grub2-mkconfig -o /boot/grub2/grub.cfg

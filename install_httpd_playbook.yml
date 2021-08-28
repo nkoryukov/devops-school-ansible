@@ -1,0 +1,22 @@
+---
+- name: httpd installation
+  hosts: nodes
+  tasks:
+  - name: install httpd
+    package: 
+      name: httpd
+      state: latest
+  - name: ensure httpd is running
+    service:
+      name: httpd
+      state: started
+      enabled: yes
+  - name: create index.html
+    template:
+      dest: /var/www/html/index.html
+      src: index.html
+  - name: open port 80 for http
+    firewalld:
+      service: http
+      permanent: true
+      state: enabled
