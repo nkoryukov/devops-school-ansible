@@ -1,0 +1,14 @@
+---
+- name: create users
+  hosts: nodes
+  vars_files:
+  - secret.yml
+  - users.yml
+  tasks:
+  - name: create user
+    user:
+      name: "{{ item }}"
+      comment: "{{ item }}@example.com"
+      home: "/home/{{ item }}"
+      password: "{{ passwd }}"
+    loop: "{{ users }}"
