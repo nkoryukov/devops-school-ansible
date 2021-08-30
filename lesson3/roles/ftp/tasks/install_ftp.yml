@@ -1,0 +1,54 @@
+---
+- name: install vsftpd
+  package:
+    name: vsftpd
+    state: latest
+
+- name: open port 21 for vsftpd
+  firewalld:
+    port: "{{ item }}" 
+    permanent: true
+    state: enabled
+  loop:
+    - 20-21/tcp
+    - "{{ ftp_pasv_min_port }}-{{ ftp_pasv_max_port }}/tcp"
+
+- name: create upload directory
+  file:
+    path: /var/ftp/pub/upload
+    state: directory
+    mode: '0777'
+
+- name: configure vsftpd
+  template:
+    dest: /etc/vsftpd/vsftpd.conf
+    src: vsftpd.conf.j2
+  notify:
+    - restart vsftpd
+
+- name: ensure vsftpd is running
+  service:
+    name: vsftpd
+    state: started
+    enabled: yes
+
+- name: install semanage
+  package:
+    name: "{{ item }}"
+    state: latest
+  loop:
+    - python3-libselinux
+    - python3-libsemanage
+
+- name: configure SELinux
+  seboolean:
+    name: allow_ftpd_full_access
+    state: yes
+    persistent: yes
+
+- name: configure SELinux for anonymous write access
+  seboolean:
+    name: ftpd_anon_write
+    state: "{{ftp_anonymous_enable}}"
+    persistent: yes
+    

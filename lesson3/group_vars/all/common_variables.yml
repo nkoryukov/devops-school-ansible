@@ -1,0 +1,4 @@
+greeting: "Hello!"
+ftp_anonymous_enable: YES
+ftp_pasv_min_port: 30000
+ftp_pasv_max_port: 31000
